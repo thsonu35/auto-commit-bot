@@ -1,10 +1,9 @@
 #!/bin/bash
 
-# --- CONFIG ---
 MIN_COMMITS=4
 MAX_COMMITS=8
 
-# --- Decide if today is commit day (approx 4–7 days/week) ---
+# Decide if today is commit day
 RANDOM_DAY=$((RANDOM % 7))
 
 if [ $RANDOM_DAY -gt 4 ]; then
@@ -12,49 +11,49 @@ if [ $RANDOM_DAY -gt 4 ]; then
   exit 0
 fi
 
-# --- Number of commits today ---
+# Number of commits
 COMMITS=$(( RANDOM % (MAX_COMMITS - MIN_COMMITS + 1) + MIN_COMMITS ))
 
 echo "Total commits today: $COMMITS"
 
-# --- Random commit messages ---
-MESSAGES=(
-  "fix: minor bug fix"
-  "feat: added new feature"
-  "update: improved logic"
-  "refactor: cleaned code"
-  "docs: updated readme"
-  "style: formatting changes"
-  "perf: improved performance"
-  "chore: small update"
-  "test: added test cases"
-  "fix: issue #$((RANDOM % 100))"
-  "feat: UI improvement"
-  "refactor: optimized code"
-)
+# Words for dynamic messages
+TYPES=("fix" "feat" "refactor" "update" "style" "docs" "perf" "chore" "test")
+SCOPES=("auth" "api" "ui" "dashboard" "login" "payment" "profile" "db" "config")
+ACTIONS=("improve" "fix" "add" "remove" "update" "optimize" "clean" "refactor")
+TARGETS=("logic" "validation" "bug" "flow" "design" "performance" "structure")
 
-# --- Start time (random between 9 AM to 12 PM) ---
-START_HOUR=$(( (RANDOM % 4) + 9 ))
-CURRENT_TIME=$(date -d "today $START_HOUR:00" +"%Y-%m-%d %H:%M:%S")
+# Start time (9–11 AM)
+START_HOUR=$(( (RANDOM % 3) + 9 ))
+START_MIN=$(( RANDOM % 60 ))
+
+CURRENT_TIME=$(date -d "today $START_HOUR:$START_MIN" +"%Y-%m-%d %H:%M:%S")
 
 for ((i=1; i<=COMMITS; i++))
 do
-  # Pick random message
-  MSG=${MESSAGES[$RANDOM % ${#MESSAGES[@]}]}
+  TYPE=${TYPES[$RANDOM % ${#TYPES[@]}]}
+  SCOPE=${SCOPES[$RANDOM % ${#SCOPES[@]}]}
+  ACTION=${ACTIONS[$RANDOM % ${#ACTIONS[@]}]}
+  TARGET=${TARGETS[$RANDOM % ${#TARGETS[@]}]}
+  ISSUE=$((RANDOM % 200))
 
-  # Make file change
+  # Final dynamic message
+  MSG="$TYPE($SCOPE): $ACTION $TARGET #$ISSUE"
+
+  # Change file
   echo "Update $i at $CURRENT_TIME" >> data.txt
 
   git add data.txt
 
-  # Commit with fake time
+  # Commit
   GIT_COMMITTER_DATE="$CURRENT_TIME" git commit --date="$CURRENT_TIME" -m "$MSG"
 
   echo "Committed: $MSG at $CURRENT_TIME"
 
-  # Add random gap (1–2 hours)
-  GAP=$(( (RANDOM % 2) + 1 ))
-  CURRENT_TIME=$(date -d "$CURRENT_TIME +$GAP hour" +"%Y-%m-%d %H:%M:%S")
+  # Gap (1–2 hr + random minutes)
+  GAP_HOUR=$(( (RANDOM % 2) + 1 ))
+  GAP_MIN=$(( RANDOM % 60 ))
+
+  CURRENT_TIME=$(date -d "$CURRENT_TIME +$GAP_HOUR hour +$GAP_MIN min" +"%Y-%m-%d %H:%M:%S")
 
   sleep 1
 done
