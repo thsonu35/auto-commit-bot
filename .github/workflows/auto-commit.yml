@@ -1,0 +1,30 @@
+name: Auto Commit Bot
+
+on:
+  schedule:
+    - cron: "0 0 * * *"   # runs every day
+  workflow_dispatch:
+
+jobs:
+  auto-commit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Git
+        run: |
+          git config --global user.name "thsonu35"
+          git config --global user.email "thsonu350@gmail.com"
+
+      - name: Make script executable
+        run: chmod +x script.sh
+
+      - name: Run auto commit script
+        run: ./script.sh
+
+      - name: Push changes
+        run: |
+          git pull
+          git push
