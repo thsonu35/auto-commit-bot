@@ -26,6 +26,10 @@ jobs:
 
       - name: Push changes
         run: |
-          git config --global pull.rebase true
-          git pull --rebase origin main
-          git push origin main
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+      
+          git fetch origin
+          git rebase origin/main || true
+      
+          git push origin main --force-with-lease
