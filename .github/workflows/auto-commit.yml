@@ -26,5 +26,6 @@ jobs:
 
       - name: Push changes
         run: |
-          git pull
-          git push
+          git config --global pull.rebase true
+          git pull --rebase origin main
+          git push origin main
